@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Render promocional · Huesos al Vuelo</title>
+  <style>
+    html,body{margin:0;background:#050817;color:#fff;font-family:Arial,sans-serif;display:grid;place-items:center;min-height:100%}canvas{width:960px;max-width:100%;box-shadow:0 18px 70px #000;border-radius:12px}button{position:fixed;top:12px;right:12px;padding:12px 20px;font-weight:800;border:0;border-radius:99px;background:#ffd633;color:#19233a;cursor:pointer}
+  </style>
+</head>
+<body>
+  <canvas id="c" width="1280" height="720"></canvas><button id="render">RENDERIZAR</button>
+  <script src="node_modules/fix-webm-duration/fix-webm-duration.js"></script>
+  <script>
+  const canvas=document.getElementById('c'),ctx=canvas.getContext('2d'),W=1280,H=720,FPS=30,DURATION=30;
+  const shots=[
+    ['01-cover','UNA AVENTURA QUE NO SE DETIENE',''],
+    ['02-select','ELEGÍ A TU HÉROE','Y ARMÁ TU PROPIO EQUIPO'],
+    ['03-cinematic-park','UNA HISTORIA PARA VIVIR','NO SOLO PARA MIRAR'],
+    ['04-park-action','CORRÉ · SALTÁ · ATRAPÁ','COMBOS, PREMIOS Y SORPRESAS'],
+    ['05-park-boss','ENFRENTÁ GRANDES BATALLAS',''],
+    ['06-rescue-cinematic','CUANDO UN AMIGO ESTÁ EN PELIGRO…','LA MISIÓN RECIÉN COMIENZA'],
+    ['07-flight-clouds','DESPEGÁ HACIA EL RESCATE',''],
+    ['08-flight-space','VOLÁ ENTRE MUNDOS','DISPARÁ Y ABRÍ EL CAMINO'],
+    ['09-ufo-boss','VENCÉ AL OVNI','NADIE QUEDA ATRÁS'],
+    ['10-cat-flight','DESBLOQUEÁ NUEVOS HÉROES','CADA UNO CON SU PROPIA AVENTURA'],
+    ['11-storm-flight','ATRAVESÁ LA TORMENTA',''],
+    ['12-dragon-boss','Y DESAFIÁ AL DRAGÓN',''],
+    ['13-victory','SUPERÁ TU MARCA','CONSEGUÍ LAS 3 ESTRELLAS'],
+    ['14-ranking','LLEGÁ A LO MÁS ALTO','DEL RANKING']
+  ].map((s,i)=>({src:`shots/${s[0]}.png`,title:s[1],sub:s[2],img:new Image(),i}));
+  const schedule=[0,2.4,4.5,6.5,8.7,10.8,13,15,17.2,19.4,21.4,23.4,25.5,27.2,28.5,30];
+  let loaded=0;shots.forEach(s=>{s.img.onload=()=>loaded++;s.img.src=s.src});
+  const ease=x=>x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2;
+  function roundedRect(x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r);}
+  function drawText(title,sub,p,scene){
+    const enter=Math.min(1,p/.22),exit=Math.min(1,(1-p)/.14),a=Math.max(0,Math.min(enter,exit)),lift=(1-ease(enter))*32;
+    ctx.save();ctx.globalAlpha=a;ctx.textAlign='center';ctx.shadowColor='rgba(0,0,0,.75)';ctx.shadowBlur=20;
+    const width=Math.min(1120,Math.max(620,ctx.measureText(title).width+110));ctx.fillStyle='rgba(5,10,29,.66)';roundedRect((W-width)/2,H-182+lift,width,130,28);ctx.fill();
+    ctx.shadowBlur=0;ctx.font='900 46px Arial';ctx.fillStyle=scene===12?'#ffe16a':'#fff';ctx.fillText(title,W/2,H-120+lift);
+    if(sub){ctx.font='800 22px Arial';ctx.fillStyle='#63e6ff';ctx.fillText(sub,W/2,H-82+lift)}ctx.restore();
+  }
+  function vignette(){const g=ctx.createRadialGradient(W/2,H/2,180,W/2,H/2,760);g.addColorStop(.54,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.68)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H)}
+  function renderFrame(t){
+    ctx.fillStyle='#050817';ctx.fillRect(0,0,W,H);
+    if(t>=28.5){
+      const p=Math.min(1,(t-28.5)/1.2),pulse=1+Math.sin((t-28.5)*8)*.012;const img=shots[0].img;
+      ctx.save();ctx.globalAlpha=.34;ctx.filter='blur(2px) saturate(1.25)';ctx.drawImage(img,-18,-10,W+36,H+20);ctx.restore();
+      const glow=ctx.createRadialGradient(W/2,H*.48,10,W/2,H*.48,420);glow.addColorStop(0,'rgba(30,190,255,.40)');glow.addColorStop(1,'rgba(8,14,38,0)');ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
+      ctx.save();ctx.translate(W/2,H*.43);ctx.scale(pulse,pulse);ctx.textAlign='center';ctx.shadowColor='#23bfff';ctx.shadowBlur=28;ctx.font='900 86px Arial';ctx.fillStyle='#fff';ctx.fillText('¡HUESOS',0,-25);ctx.fillStyle='#ffd63f';ctx.fillText('AL VUELO!',0,62);ctx.restore();
+      ctx.globalAlpha=ease(p);ctx.textAlign='center';ctx.shadowBlur=0;ctx.font='800 27px Arial';ctx.fillStyle='#fff';ctx.fillText('CORRÉ  ·  VOLÁ  ·  RESCATÁ A TUS AMIGOS',W/2,H*.69);ctx.font='900 24px Arial';ctx.fillStyle='#63e6ff';ctx.fillText('¿ESTÁS LISTO PARA DESPEGAR?',W/2,H*.78);ctx.globalAlpha=1;return;
+    }
+    let i=0;while(i<shots.length-1&&t>=schedule[i+1])i++;const start=schedule[i],end=schedule[i+1],p=(t-start)/(end-start),s=shots[i],img=s.img;
+    const scale=1.02+p*.065,panX=(i%2?1:-1)*p*20,panY=(i%3-1)*p*10,dw=W*scale,dh=H*scale;
+    ctx.save();ctx.translate(W/2+panX,H/2+panY);ctx.drawImage(img,-dw/2,-dh/2,dw,dh);ctx.restore();vignette();
+    const fade=Math.min(1,p/.10,(1-p)/.10);ctx.fillStyle=`rgba(5,8,23,${1-Math.max(0,fade)})`;ctx.fillRect(0,0,W,H);
+    drawText(s.title,s.sub,p,i);
+    ctx.fillStyle='rgba(255,255,255,.82)';ctx.font='800 17px Arial';ctx.textAlign='left';ctx.fillText('🐾  HUESOS AL VUELO',34,42);
+  }
+  function makeEpicMusic(ac,dest,start){
+    const master=ac.createGain();master.gain.setValueAtTime(.76,start);master.gain.exponentialRampToValueAtTime(.001,start+DURATION+.35);master.connect(dest);
+    const notes={D2:73.42,A2:110,C3:130.81,D3:146.83,F3:174.61,G3:196,A3:220,C4:261.63,D4:293.66,F4:349.23,G4:392,A4:440};
+    const chords=[['D2','D3','F3','A3'],['C3','G3','C4'],['A2','A3','C4'],['D2','F3','A3','D4'],['G3','A3','D4'],['A2','C4','F4'],['D2','A3','D4','F4']];
+    const osc=(freq,at,dur,type='sawtooth',gain=.025)=>{const o=ac.createOscillator(),g=ac.createGain(),f=ac.createBiquadFilter();o.type=type;o.frequency.value=freq;f.type='lowpass';f.frequency.value=type==='sawtooth'?1200:2600;g.gain.setValueAtTime(.001,at);g.gain.exponentialRampToValueAtTime(gain,at+.06);g.gain.setValueAtTime(gain,at+dur*.65);g.gain.exponentialRampToValueAtTime(.001,at+dur);o.connect(f);f.connect(g);g.connect(master);o.start(at);o.stop(at+dur+.05)};
+    for(let bar=0;bar<15;bar++){const at=start+bar*2,ch=chords[Math.min(chords.length-1,Math.floor(bar/2))];ch.forEach((n,j)=>osc(notes[n],at,1.92,j===0?'sine':'sawtooth',j===0?.10:.018+bar*.0009));const melody=['D4','F4','A4','G4'][bar%4];osc(notes[melody],at+1, .86,'triangle',.05)}
+    const noiseBuffer=ac.createBuffer(1,ac.sampleRate*.22,ac.sampleRate),d=noiseBuffer.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2);
+    const hit=at=>{const s=ac.createBufferSource(),g=ac.createGain(),f=ac.createBiquadFilter();s.buffer=noiseBuffer;f.type='lowpass';f.frequency.value=180;g.gain.setValueAtTime(.16,at);g.gain.exponentialRampToValueAtTime(.001,at+.28);s.connect(f);f.connect(g);g.connect(master);s.start(at)};
+    for(let t=0;t<DURATION;t+=.5)hit(start+t);[0,4.5,8.7,13,17.2,21.4,25.5,28.5].forEach(t=>{hit(start+t);osc(55,start+t,.9,'sine',.16)});
+  }
+  async function startRender(){
+    document.getElementById('render').disabled=true;while(loaded<shots.length)await new Promise(r=>setTimeout(r,50));
+    const ac=new AudioContext({sampleRate:48000}),dest=ac.createMediaStreamDestination(),start=ac.currentTime+.15;makeEpicMusic(ac,dest,start);
+    const stream=canvas.captureStream(FPS);dest.stream.getAudioTracks().forEach(track=>stream.addTrack(track));
+    const type=MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')?'video/webm;codecs=vp9,opus':'video/webm;codecs=vp8,opus';
+    const rec=new MediaRecorder(stream,{mimeType:type,videoBitsPerSecond:9000000,audioBitsPerSecond:192000}),chunks=[];rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+    const done=new Promise(resolve=>rec.onstop=resolve);rec.start();const realStart=performance.now();
+    await new Promise(resolve=>{const loop=()=>{const t=(performance.now()-realStart)/1000;renderFrame(Math.min(t,DURATION));if(t<DURATION)requestAnimationFrame(loop);else resolve()};loop()});
+    await new Promise(r=>setTimeout(r,250));rec.stop();await done;const blob=new Blob(chunks,{type});const fixed=await ysFixWebmDuration(blob,30250,{logger:false});const a=document.createElement('a');a.href=URL.createObjectURL(fixed);a.download='Huesos-al-Vuelo-trailer-30s.webm';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+  }
+  document.getElementById('render').onclick=startRender;
+  renderFrame(0);
+  </script>
+</body></html>

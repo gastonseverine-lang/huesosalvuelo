@@ -1,0 +1,41 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /contactLeads/{leadId} {
+      allow read, write: if false;
+    }
+
+    match /huesosLeaderboard/{userId} {
+      allow read: if true;
+      allow create: if request.auth != null
+                    && request.auth.uid == userId
+                    && validRankingEntry(request.resource.data);
+      allow update: if request.auth != null
+                    && request.auth.uid == userId
+                    && validRankingEntry(request.resource.data)
+                    && request.resource.data.score >= resource.data.score;
+      allow delete: if false;
+    }
+
+    function validRankingEntry(data) {
+      return data.keys().hasOnly(['nickname', 'score', 'mission', 'character', 'bones', 'coins', 'updatedAt'])
+             && data.keys().hasAll(['nickname', 'score', 'mission', 'character', 'updatedAt'])
+             && data.nickname is string
+             && data.nickname.size() >= 1
+             && data.nickname.size() <= 14
+             && data.score is int
+             && data.score >= 0
+             && data.score <= 99999999
+             && data.mission is int
+             && data.mission >= 1
+             && data.mission <= 3
+             && data.character is string
+             && data.character.size() >= 1
+             && data.character.size() <= 24
+             && (!data.keys().hasAny(['bones']) || (data.bones is int && data.bones >= 0))
+             && (!data.keys().hasAny(['coins']) || (data.coins is int && data.coins >= 0))
+             && data.updatedAt == request.time;
+    }
+  }
+}

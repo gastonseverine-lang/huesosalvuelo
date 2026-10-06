@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "atapia-f0323"
+  },
+  "targets": {
+    "atapia-f0323": {
+      "hosting": {
+        "huesos-game": [
+          "huesos-al-vuelo-atapia"
+        ]
+      }
+    }
+  }
+}

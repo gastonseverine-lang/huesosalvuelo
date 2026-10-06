@@ -1,0 +1,25 @@
+# Firebase local deployment cache
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+*.local
+
+# Dependency/build caches
+node_modules/
+.cache/
+dist/
+
+# Editor and operating-system files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.tmp
+*.bak
+

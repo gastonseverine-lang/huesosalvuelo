@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#27a9ef" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22><text y=%22.9em%22 font-size=%2290%22>🦴</text></svg>">
+  <title>¡Huesos al Vuelo!</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=66" />
+</head>
+<body>
+  <main id="app">
+    <section id="storyIntro" class="story-intro cover-intro" aria-label="Portada de Huesos al Vuelo">
+      <div class="cover-sky" aria-hidden="true"></div>
+      <div class="story-bones" aria-hidden="true"><span>🦴</span><span>🦴</span><span>🦴</span><span>🦴</span></div>
+      <div class="cover-cast" aria-hidden="true">
+        <span class="cover-dog"></span>
+        <span class="cover-mouse"></span>
+        <span class="cover-cat"></span>
+      </div>
+      <div class="cover-copy">
+        <div class="cover-paw">🐾</div>
+        <p class="cover-kicker">UNA AVENTURA DE AMISTAD</p>
+        <h1>¡Huesos<br><span>al Vuelo!</span></h1>
+        <p class="cover-subtitle">Corré, saltá y recuperá la gran cosecha.</p>
+        <button id="storyNext" class="primary-btn cover-play">JUGAR <span>▶</span></button>
+      </div>
+      <div class="cover-ground" aria-hidden="true"></div>
+    </section>
+
+    <section id="setup" class="screen setup-screen">
+      <div class="setup-copy">
+        <div class="logo-mark">🐾</div>
+        <h1>¡Huesos<br><span>al Vuelo!</span></h1>
+        <p>Elegí un amigo y entrá directo a la aventura.</p>
+        <div class="mission-glance">
+          <span><i>🎯</i><b>OBJETIVO</b><small>Completá cada ruta</small></span>
+          <span><i>🦴</i><b>COMBOS</b><small>Atrapá sin fallar</small></span>
+          <span><i>⭐</i><b>PREMIOS</b><small>Ganate 3 estrellas</small></span>
+        </div>
+        <div id="menuBest" class="menu-best">🏆 Mejor puntaje: 0</div>
+      </div>
+      <div class="setup-panel">
+        <div class="account-row">
+          <button id="googleSignIn" class="account-btn"><span>G</span> Jugar con Google</button>
+          <div id="accountStatus" class="account-status hidden"><span>✓</span><b>Conectado</b><button id="googleSignOut" title="Cerrar sesión">Salir</button></div>
+          <button id="rankingBtn" class="ranking-btn">🏆 Ranking</button>
+        </div>
+        <div id="authMessage" class="auth-message hidden" role="status" aria-live="polite"></div>
+        <h2>Elegí a tu compañero</h2>
+        <div id="dogChoices" class="dog-choices" role="radiogroup" aria-label="Elegir perro"></div>
+        <div id="unlockedCharacters" class="unlocked-characters hidden">
+          <p>✨ PERSONAJES DESBLOQUEADOS</p>
+          <div id="specialChoices" class="special-choices" role="radiogroup" aria-label="Elegir personaje especial"></div>
+        </div>
+        <div class="character-name-panel" aria-live="polite">
+          <span>Tu compañero</span><strong id="fixedCharacterName">Mike</strong><small>Cada héroe tiene su propio nombre y personalidad.</small>
+          <input id="dogName" type="hidden" value="Mike" />
+        </div>
+        <button id="startBtn" class="primary-btn">¡A jugar! <span>▶</span></button>
+        <button id="mission2Shortcut" class="mission-shortcut hidden">🚀 Continuar Misión 2</button>
+        <button id="forestShortcut" class="mission-shortcut forest-shortcut hidden">🌧️ Nueva historia · Mike perdido</button>
+        <p class="controls-hint">Teclado: <b>← →</b> y <b>Espacio</b>. Celular: <b>arrastrá con el dedo</b> y <b>tocá</b> para saltar o lanzar.</p>
+      </div>
+    </section>
+
+    <section id="missionCinematic" class="mission-cinematic hidden" aria-label="Video de introducción de la misión" aria-live="polite">
+      <div class="cinematic-media" aria-hidden="true">
+        <img id="cinematicImage" alt="" />
+        <div id="cinematicActors" class="cinematic-actors"></div>
+        <div class="cinematic-speed-lines"></div>
+      </div>
+      <div class="cinematic-shade"></div>
+      <div class="cinematic-topbar">
+        <div class="cinematic-brand">¡Huesos <span>al Vuelo!</span></div>
+        <button id="cinematicSkip" class="cinematic-skip">Omitir video <span>▶</span></button>
+      </div>
+      <div class="cinematic-copy">
+        <p id="cinematicMission" class="cinematic-mission">MISIÓN 1 · LA GRAN COSECHA</p>
+        <h2 id="cinematicTitle">¡Los huesos están volando!</h2>
+        <p id="cinematicText">Corré por el parque y atrapá todos los huesos antes de que se pierdan.</p>
+      </div>
+      <div class="cinematic-footer">
+        <span id="cinematicScene">ESCENA 1 DE 4</span>
+        <div class="cinematic-track"><i id="cinematicProgress"></i></div>
+        <strong id="cinematicTime">20 s</strong>
+      </div>
+    </section>
+
+    <section id="mission2Intro" class="mission2-intro hidden" aria-label="Comienzo de la misión 2">
+      <div class="mission2-story">
+        <p>MISIÓN 2</p>
+        <h2>¡SE LLEVARON AL RATÓN!</h2>
+        <div class="mission2-copy">Cuando por fin eran amigos, un OVNI apareció entre las nubes y capturó a Rayo. Ahora el perro y Clemente deberán volar juntos, esquivar bolas de fuego y estrellas, y abrir cajas sorpresa para atacar con ráfagas, manzanas y huevos explosivos.</div>
+        <button id="mission2Btn" class="primary-btn">¡AL RESCATE! <span>▶</span></button>
+        <small>Arrastrá o usá las flechas para pilotar. Tocá o usá espacio para lanzar huesos.</small>
+      </div>
+    </section>
+
+    <section id="mission2Briefing" class="mission2-briefing hidden" aria-label="Instrucciones de la misión 2">
+      <div class="briefing-card">
+        <p class="briefing-kicker">ESCUELA DE VUELO</p>
+        <h2 id="briefingTitle">Antes de despegar…</h2>
+        <p id="briefingLead">El perro pilota y Clemente ayuda a abrir el camino. ¡Vuelan juntos para rescatar a Rayo!</p>
+        <div class="briefing-grid">
+          <article><span>🕹️</span><b>PILOTÁ</b><small>Flechas o arrastrá el avión.</small></article>
+          <article><span>🦴</span><b>DISPARÁ</b><small>Espacio o un toque.</small></article>
+          <article><span>📦</span><b>ABRÍ CAJAS</b><small>Activan ráfaga, manzanas y huevos.</small></article>
+          <article><span>🔋</span><b>CUIDÁ LA ENERGÍA</b><small>Las cápsulas recargan el escudo.</small></article>
+        </div>
+        <div id="briefingRoute" class="briefing-route"></div>
+        <button id="briefingStartBtn" class="primary-btn">¡ENTENDIDO, A VOLAR! <span>▶</span></button>
+      </div>
+    </section>
+
+    <section id="game" class="screen game-screen hidden" aria-label="Juego">
+      <canvas id="gameCanvas" width="1600" height="900"></canvas>
+      <header class="hud">
+        <div class="brand-small">¡Huesos<br><span>al Vuelo!</span></div>
+        <div class="hud-pill score-pill"><small>PUNTOS</small><strong id="score">0000</strong></div>
+        <div id="hearts" class="hearts" aria-label="Energía y recargas"></div>
+        <div class="hud-pill level-pill"><small>NIVEL</small><strong id="level">1/5</strong></div>
+        <div class="hud-pill timer-pill"><small>TIEMPO</small><strong id="timer">01:30</strong></div>
+        <button id="soundBtn" class="sound-btn" aria-label="Silenciar música y efectos" title="Sonido">🔊</button>
+        <button id="pauseBtn" class="sound-btn pause-btn hidden" aria-label="Pausar juego" title="Pausa (Esc)">Ⅱ</button>
+      </header>
+      <div id="climateLabel" class="climate-label">☀️ Día soleado</div>
+      <div id="powerStatus" class="power-status hidden">⚡ SUPERPODER 10s</div>
+      <div id="weaponStatus" class="weapon-status hidden">🦴 HUESO NEGRO LISTO</div>
+      <div id="netStatus" class="net-status hidden">🕸️ ATRAPADO 5s</div>
+      <div id="surpriseStatus" class="surprise-status hidden">🎁 SORPRESA</div>
+      <div class="level-progress"><div id="progressBar"></div><span id="progressText">0 / 5000</span></div>
+      <div id="missionObjective" class="mission-objective hidden"></div>
+      <div id="bossBar" class="boss-bars hidden">
+        <div class="boss-row rat-row"><span>🐭 RAYO <b id="ratCount">100</b></span><div><i id="ratHealth"></i></div></div>
+        <div class="boss-row cat-row"><span>🐱 CLEMENTE <b id="bossCount">20</b></span><div><i id="bossHealth"></i></div></div>
+      </div>
+      <div id="alienBar" class="alien-bar hidden"><span>👽 EXTRATERRESTRE <b id="alienCount">40</b></span><div><i id="alienHealth"></i></div></div>
+      <div id="toast" class="toast hidden"></div>
+      <div id="touchHint" class="touch-hint">☝️ Arrastrá para moverte · tocá para actuar</div>
+      <div id="tutorialCoach" class="tutorial-coach hidden"><span id="tutorialIcon">↔</span><div><b id="tutorialTitle">MOVETE</b><small id="tutorialText">Arrastrá o usá las flechas</small></div></div>
+      <div id="comboHud" class="combo-hud hidden"><b id="comboValue">COMBO ×2</b><small id="comboBonus">PUNTOS ×2</small></div>
+      <div id="bestHud" class="best-hud">🏆 <span id="bestHudValue">0</span></div>
+      <div class="mobile-controls">
+        <button id="leftBtn" aria-label="Mover a la izquierda">◀</button>
+        <button id="actionBtn" class="action hidden" aria-label="Lanzar hueso">¡HUESO!</button>
+        <button id="specialFireBtn" class="special-fire hidden" aria-label="Disparar hueso">🦴</button>
+        <button id="rightBtn" aria-label="Mover a la derecha">▶</button>
+      </div>
+    </section>
+
+    <div id="pauseOverlay" class="pause-overlay hidden" role="dialog" aria-modal="true" aria-label="Juego en pausa">
+      <div class="pause-card">
+        <span id="pauseIcon" class="pause-plane">🐾</span>
+        <p id="pauseKicker" class="briefing-kicker">MISIÓN 1</p>
+        <h2 id="pauseTitle">Juego en pausa</h2>
+        <label><span>🎵 Música</span><output id="musicVolumeValue">85%</output><input id="musicVolume" type="range" min="0" max="100" value="85"></label>
+        <label><span id="effectsVolumeLabel">🔊 Efectos</span><output id="effectsVolumeValue">85%</output><input id="effectsVolume" type="range" min="0" max="100" value="85"></label>
+        <button id="resumeBtn" class="primary-btn">Continuar aventura <span>▶</span></button>
+        <button id="pauseGoogleLogin" class="pause-google-login"><span>G</span> Guardar partida con Google</button>
+        <div class="pause-actions"><button id="restartMission2LevelBtn">Reiniciar nivel</button><button id="exitMission2Btn">Salir al inicio</button></div>
+        <small>También podés pausar con <b>P</b> o <b>Esc</b>.</small>
+      </div>
+    </div>
+
+    <div id="lifeCountdown" class="life-countdown hidden" role="status" aria-live="assertive">
+      <div class="life-countdown-card">
+        <div class="life-hit-scene" aria-hidden="true">
+          <span class="hit-star star-one">★</span><span class="hit-star star-two">★</span><span class="hit-drop">💦</span>
+          <div id="lifeHitDog" class="life-hit-dog"></div>
+        </div>
+        <p class="briefing-kicker">¡ENERGÍA!</p>
+        <h2 id="lifeCountdownTitle">¡Recargando energía!</h2>
+        <p id="lifeCountdownReason"></p>
+        <b id="lifeCountdownNumber">3</b>
+        <small id="lifeCountdownHint">Seguimos la aventura en...</small>
+      </div>
+    </div>
+
+    <div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+      <div class="modal-card">
+        <div id="modalIcon" class="modal-icon">⭐</div>
+        <h2 id="modalTitle">¡Nivel superado!</h2>
+        <p id="modalText"></p>
+        <button id="modalBtn" class="primary-btn">Continuar <span>▶</span></button>
+      </div>
+    </div>
+
+    <section id="ending" class="ending hidden" aria-live="polite">
+      <div class="ending-rays"></div>
+      <div class="ending-card">
+        <div id="endingIcon" class="ending-icon">🏆</div>
+        <h2 id="endingTitle">¡GANASTE!</h2>
+        <p id="endingText"></p>
+        <blockquote id="endingMoral" class="ending-moral hidden"></blockquote>
+        <div id="endingScore" class="ending-score">0000 puntos</div>
+        <div id="scoreLoginPrompt" class="score-login-prompt hidden">
+          <b>🏆 ¿Querés guardar tu puntaje en el ranking?</b>
+          <small>Tu correo no se muestra. El ranking usa el apodo de tu mascota.</small>
+          <button id="endingGoogleLogin"><span>G</span> Guardar con Google</button>
+        </div>
+        <div id="resultStats" class="result-stats hidden">
+          <div><small>MEJOR</small><b id="resultBest">0</b></div>
+          <div><small>ESTRELLAS</small><b id="resultStars">☆☆☆</b></div>
+          <div><small>OBJETOS</small><b id="resultItems">0</b></div>
+          <div><small>COMBO MÁX.</small><b id="resultCombo">×1</b></div>
+        </div>
+        <div id="newRecord" class="new-record hidden">🏆 ¡NUEVO RÉCORD!</div>
+        <div id="endingActions" class="ending-actions hidden">
+          <button id="replayBtn">↻ Jugar de nuevo</button>
+          <button id="endingBtn" class="primary-btn">Siguiente misión <span>▶</span></button>
+          <button id="menuBtn">Menú</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="rankingModal" class="ranking-modal hidden" role="dialog" aria-modal="true" aria-label="Ranking de jugadores">
+      <div class="ranking-card">
+        <button id="rankingClose" class="ranking-close" aria-label="Cerrar ranking">×</button>
+        <p class="ranking-kicker">🏆 CAMPEONES DEL PARQUE</p>
+        <h2>Ranking</h2>
+        <p>El apodo de tu personaje representa tu partida. Tu correo nunca se muestra.</p>
+        <ol id="rankingList" class="ranking-list"><li class="ranking-empty">Cargando récords…</li></ol>
+        <div id="rankingOwn" class="ranking-own hidden"></div>
+        <button id="rankingLogin" class="primary-btn">Jugar con Google para guardar mi récord <span>▶</span></button>
+      </div>
+    </section>
+  </main>
+  <script src="game.js?v=66"></script>
+  <script type="module" src="leaderboard.js?v=59"></script>
+</body>
+</html>

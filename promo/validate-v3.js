@@ -1,0 +1,10 @@
+const path=require('path');
+const {chromium}=require('playwright');
+(async()=>{
+  const browser=await chromium.launch({headless:true,executablePath:'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',args:['--autoplay-policy=no-user-gesture-required','--allow-file-access-from-files']});
+  const page=await browser.newPage({viewport:{width:1280,height:720}}),file=path.resolve(__dirname,'Huesos-al-Vuelo-promo-joven-v3.webm').replace(/\\/g,'/');
+  await page.goto(`file:///${file}`,{waitUntil:'load'});await page.waitForFunction(()=>document.querySelector('video')?.readyState>=1);
+  const meta=await page.evaluate(()=>{const v=document.querySelector('video'),ac=new AudioContext(),src=ac.createMediaElementSource(v),an=ac.createAnalyser();an.fftSize=2048;src.connect(an);an.connect(ac.destination);window.__audio={ac,an};return{duration:v.duration,width:v.videoWidth,height:v.videoHeight,readyState:v.readyState}});
+  const energies={};for(const second of [2,12,27,42,57,68,73.8,74.7,74.9]){await page.evaluate(second=>new Promise(resolve=>{const v=document.querySelector('video');v.pause();v.addEventListener('seeked',resolve,{once:true});v.currentTime=second}),second);await page.evaluate(()=>document.querySelector('video').play());await page.waitForTimeout(140);energies[second]=await page.evaluate(()=>{const data=new Uint8Array(window.__audio.an.fftSize);window.__audio.an.getByteTimeDomainData(data);let sum=0;for(const value of data){const n=(value-128)/128;sum+=n*n}return Math.sqrt(sum/data.length)});if([12,27,42,57,68,73.8].includes(second)){await page.screenshot({path:path.resolve(__dirname,`v3-preview-${String(second).replace('.','-')}.png`)})}}
+  const decode=await page.evaluate(()=>{const v=document.querySelector('video');return{audioDecodedBytes:v.webkitAudioDecodedByteCount||null,videoDecodedBytes:v.webkitVideoDecodedByteCount||null}});console.log(JSON.stringify({...meta,...decode,energies}));await browser.close();
+})().catch(e=>{console.error(e);process.exitCode=1});
