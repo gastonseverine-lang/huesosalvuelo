@@ -23,7 +23,7 @@ naturalDogsImg.src = 'assets/dogs-natural-v2.png';
   'assets/dog-kaiser-personality-v1-raw.png',
   'assets/dog-landa-personality-v1-raw.png'
 ].forEach((src,i)=>dogPersonalityImgs[i].src=src);
-forestLevelImgs.forEach((img,i)=>img.src=`assets/mission4-level${i+1}-v1.png`);forestObjectsImg.src='assets/mission4-objects-v1.png';forestFlamingoImg.src='assets/mission4-flamingo-v1.png';forestMikeImg.src='assets/dog-mike-forest-v2.png';forestMikeJumpImg.src='assets/dog-mike-forest-jump-v3.png';wildlifeFlightImg.src='assets/wildlife-flight-v2.png';forestNatureImg.src='assets/forest-platforms-collectibles-v2.png';forestBatImg.src='assets/forest-bat-v2.png';forestBranchImg.src='assets/forest-branch-v2.png';forestProduceImg.src='assets/forest-produce-v2.png';mission1CrowImg.src='assets/mission1-crow-v2.png';
+forestLevelImgs.forEach((img,i)=>img.src=`assets/mission4-level${i+1}-v1.png`);forestObjectsImg.src='assets/mission4-objects-v1.png';forestFlamingoImg.src='assets/mission4-flamingo-v1.png';forestMikeImg.src='assets/dog-mike-forest-v2.png';forestMikeJumpImg.src='assets/dog-mike-forest-jump-v4.webp';wildlifeFlightImg.src='assets/wildlife-flight-v2.png';forestNatureImg.src='assets/forest-platforms-collectibles-v2.png';forestBatImg.src='assets/forest-bat-v2.png';forestBranchImg.src='assets/forest-branch-v2.png';forestProduceImg.src='assets/forest-produce-v2.png';mission1CrowImg.src='assets/mission1-crow-v2.png';
 naturalCastImg.src = 'assets/cast-natural-v1.png';
 objectsImg.src = 'assets/objects.png';
 pirateImg.src = 'assets/pirate-mouse.png';
@@ -998,7 +998,7 @@ function forestPlatformTop(p){const w=canvas.w||innerWidth,h=canvas.h||innerHeig
 function drawForestProduce(kind,x,y,width){if(!forestProduceImg.complete||!forestProduceImg.naturalWidth)return;const cellW=forestProduceImg.naturalWidth/2,cellH=forestProduceImg.naturalHeight/2,index=Math.max(0,Math.min(3,kind-2)),sx=(index%2)*cellW,sy=Math.floor(index/2)*cellH;ctx.drawImage(forestProduceImg,sx,sy,cellW,cellH,x-width/2,y-width/2,width,width);}
 const FOREST_MIKE_RECTS=[[0,0,340,724],[370,0,350,724],[740,0,360,724],[1100,0,335,724],[1420,0,350,724],[1760,0,412,724]];
 function drawForestMike(frame,x,groundY,width){const r=FOREST_MIKE_RECTS[frame]||FOREST_MIKE_RECTS[0];if(!forestMikeImg.complete||!forestMikeImg.naturalWidth)return;const scale=width/r[2],height=r[3]*scale,anchor=(frame===4?510:frame===5?505:515)*scale;ctx.drawImage(forestMikeImg,r[0],r[1],r[2],r[3],x-width/2,groundY-anchor,width,height);}
-function drawForestJumpMike(x,groundY,width){if(!forestMikeJumpImg.complete||!forestMikeJumpImg.naturalWidth){drawForestMike(2,x,groundY,width);return;}const size=width*1.18;ctx.drawImage(forestMikeJumpImg,x-size/2,groundY-size*.78,size,size);}
+function drawForestJumpMike(x,groundY,width){if(!forestMikeJumpImg.complete||!forestMikeJumpImg.naturalWidth){drawForestMike(0,x,groundY,width);return;}const renderW=width*1.22,renderH=renderW*forestMikeJumpImg.naturalHeight/forestMikeJumpImg.naturalWidth;ctx.drawImage(forestMikeJumpImg,x-renderW/2,groundY-renderH*.96,renderW,renderH);}
 const WILDLIFE_RECTS=[
   [0,0,270,724],[270,0,260,724],[530,0,270,724],
   [810,0,260,724],[1090,0,270,724],
