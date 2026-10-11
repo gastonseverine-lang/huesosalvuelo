@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>Centro de control · Huesos al Vuelo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="control.css?v=2">
+</head>
+<body>
+  <div class="sky" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+
+  <main id="loginView" class="login-view">
+    <section class="login-card" aria-labelledby="loginTitle">
+      <div class="brand"><span>🦴</span><strong>Huesos<br>al Vuelo</strong></div>
+      <h1 id="loginTitle">Acceso privado</h1>
+      <p>Ingresá con las credenciales del centro de control.</p>
+      <form id="loginForm">
+        <label>Usuario<input id="loginEmail" type="email" autocomplete="username" required></label>
+        <label>Contraseña<input id="loginPassword" type="password" autocomplete="current-password" required></label>
+        <button id="loginButton" type="submit">Entrar <span>→</span></button>
+      </form>
+      <p id="loginMessage" class="form-message" role="alert"></p>
+    </section>
+  </main>
+
+  <main id="dashboardView" class="dashboard hidden">
+    <aside class="sidebar">
+      <div class="brand"><span>🦴</span><strong>Huesos<br>al Vuelo</strong></div>
+      <nav aria-label="Secciones">
+        <a href="#panorama" class="active"><span>⌂</span>Panorama</a>
+        <a href="#misiones"><span>◈</span>Misiones</a>
+        <a href="#actividad"><span>▥</span>Actividad</a>
+      </nav>
+      <div class="sidebar-scene" aria-hidden="true"><span>🐕</span></div>
+    </aside>
+
+    <section class="workspace">
+      <header>
+        <div><h1>Centro de control</h1><p>Panorama en vivo del juego</p></div>
+        <button id="logoutButton" class="logout" type="button">Cerrar sesión</button>
+      </header>
+
+      <section id="panorama" class="metrics" aria-label="Panorama en vivo">
+        <article><span class="metric-icon green">●</span><div><small>Jugando ahora</small><strong id="onlineCount">—</strong></div><em>EN VIVO</em></article>
+        <article><span class="metric-icon blue">●</span><div><small>Jugadores de hoy</small><strong id="todayCount">—</strong></div></article>
+        <article><span class="metric-icon yellow">●</span><div><small>Ingresos totales</small><strong id="totalCount">—</strong></div></article>
+        <article><span class="metric-icon coral">●</span><div><small>Última actividad</small><strong id="lastActivity">Sin datos</strong></div></article>
+      </section>
+
+      <section class="dashboard-grid">
+        <article id="misiones" class="panel mission-panel">
+          <div class="panel-heading"><div><h2>Control de misiones</h2><p>Los cambios afectan nuevos ingresos, no las partidas en curso.</p></div><span id="saveState">Sincronizado</span></div>
+          <div id="missionControls" class="mission-list">
+            <label><span class="mission-mark harvest">🌽</span><span><b>Misión 1 · La gran cosecha</b><small>Perros, huesos y la batalla final</small></span><input type="checkbox" data-key="mission1" checked disabled><i></i></label>
+            <label><span class="mission-mark ufo">🛸</span><span><b>Misión 2 · Rescate OVNI</b><small>El equipo vuela para rescatar a Rayo</small></span><input type="checkbox" data-key="mission2" checked disabled><i></i></label>
+            <label><span class="mission-mark sky-mark">☁</span><span><b>Misiones especiales · Cielos</b><small>Clemente y Rayo desbloqueados</small></span><input type="checkbox" data-key="missionSpecial" checked disabled><i></i></label>
+            <label><span class="mission-mark forest">🐾</span><span><b>Misión 3 · Mike perdido</b><small>El sendero del bosque encantado</small></span><input type="checkbox" data-key="mission3" checked disabled><i></i></label>
+          </div>
+        </article>
+
+        <article class="panel chart-panel">
+          <div class="panel-heading"><div><h2>Actividad por hora</h2><p>Entradas registradas durante el día</p></div><b id="chartTotal">0 hoy</b></div>
+          <div id="activityChart" class="chart" aria-label="Actividad de hoy por hora"></div>
+        </article>
+      </section>
+
+      <section id="actividad" class="panel activity-panel">
+        <div class="panel-heading"><div><h2>Actividad reciente</h2><p>El correo de los jugadores nunca se muestra.</p></div><button id="refreshButton" type="button">Actualizar</button></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Jugador</th><th>Entrada</th><th>Última señal</th><th>Estado</th><th>Misión</th><th>Dispositivo</th></tr></thead>
+            <tbody id="sessionsBody"><tr><td colspan="6" class="empty">Esperando actividad…</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+  </main>
+  <script type="module" src="control.js?v=2"></script>
+</body>
+</html>

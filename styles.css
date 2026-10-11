@@ -211,3 +211,4 @@ body{overscroll-behavior:none;-webkit-user-select:none;user-select:none}.setup-s
 .cine-actor.mouse:not(.player-hero){background-image:url("assets/cast-natural-v1.png");background-size:300% 300%;background-position:50% 50%}
 .cine-actor.cat:not(.player-hero){background-image:url("assets/cast-natural-v1.png");background-size:300% 300%;background-position:100% 50%}
 .toast{width:min(760px,82vw);text-align:center;line-height:.96;font-size:clamp(1.15rem,3vw,2.35rem);white-space:normal}
+.primary-btn:disabled,.mission-shortcut:disabled{cursor:not-allowed;filter:grayscale(.45);opacity:.55;box-shadow:none!important}.special-choice.mission-off{opacity:.5;filter:grayscale(.65)}

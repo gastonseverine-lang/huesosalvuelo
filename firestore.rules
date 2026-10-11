@@ -2,6 +2,52 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isControlUser() {
+      return request.auth != null
+             && request.auth.token.email == 'annet@perro.com';
+    }
+
+    match /huesosConfig/{configId} {
+      allow read: if true;
+      allow create, update: if isControlUser()
+                            && request.resource.data.keys().hasOnly(['mission1', 'mission2', 'missionSpecial', 'mission3', 'updatedAt'])
+                            && request.resource.data.mission1 is bool
+                            && request.resource.data.mission2 is bool
+                            && request.resource.data.missionSpecial is bool
+                            && request.resource.data.mission3 is bool
+                            && request.resource.data.updatedAt == request.time;
+      allow delete: if false;
+    }
+
+    match /huesosSessions/{sessionId} {
+      allow read: if isControlUser();
+      allow create: if validSession(request.resource.data)
+                    && request.resource.data.startedAt <= request.time + duration.value(10, 'm')
+                    && request.resource.data.startedAt >= request.time - duration.value(10, 'm')
+                    && request.resource.data.lastSeen == request.time;
+      allow update: if validSession(request.resource.data)
+                    && request.resource.data.startedAt == resource.data.startedAt
+                    && request.resource.data.lastSeen == request.time;
+      allow delete: if isControlUser();
+    }
+
+    function validSession(data) {
+      return data.keys().hasOnly(['nickname', 'mission', 'device', 'page', 'startedAt', 'lastSeen'])
+             && data.keys().hasAll(['nickname', 'mission', 'device', 'page', 'startedAt', 'lastSeen'])
+             && data.nickname is string
+             && data.nickname.size() >= 1
+             && data.nickname.size() <= 28
+             && data.mission is int
+             && data.mission >= 0
+             && data.mission <= 4
+             && data.device is string
+             && data.device.size() <= 20
+             && data.page is string
+             && data.page.size() <= 80
+             && data.startedAt is timestamp
+             && data.lastSeen is timestamp;
+    }
+
     match /contactLeads/{leadId} {
       allow read, write: if false;
     }

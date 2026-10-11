@@ -362,6 +362,9 @@ function tutorialAction(kind){
   if(tutorialStep===2&&kind==='jump')finishTutorialStep();
 }
 
+function missionControlAllows(key){return window.huesosMissionFlags?.[key]!==false;}
+function missionControlBlocked(key){if(missionControlAllows(key))return false;const names={mission1:'La gran cosecha',mission2:'Rescate OVNI',missionSpecial:'Aventuras del cielo',mission3:'Mike perdido'};showToast(`🔧 ${names[key]} está temporalmente en preparación`);return true;}
+
 function heroesUnlocked(){return localStorage.getItem(HERO_UNLOCK_KEY)==='true';}
 function selectHero(type,dogIndex=selectedDog){
   selectedHero=type;if(type==='dog')selectedDog=dogIndex;
@@ -378,11 +381,11 @@ function renderCharacterChoices(){
 renderCharacterChoices();
 function refreshForestShortcut(){const unlocked=localStorage.getItem(FOREST_UNLOCK_KEY)==='true';$('forestShortcut').classList.toggle('hidden',!unlocked);}
 refreshForestShortcut();
-function playForestStory(){selectedHero='dog';selectedDog=0;audio.start();playMissionCinematic(6,beginForestAdventure);}
+function playForestStory(){if(missionControlBlocked('mission3'))return;selectedHero='dog';selectedDog=0;audio.start();playMissionCinematic(6,beginForestAdventure);}
 $('forestShortcut').onclick=playForestStory;
 const forestDemo=Number(new URLSearchParams(location.search).get('forestDemo')||0);if(forestDemo>=1&&forestDemo<=5)setTimeout(()=>{const params=new URLSearchParams(location.search);localStorage.setItem(FOREST_UNLOCK_KEY,'true');closeStory();beginForestAdventure();if(forestDemo>1){forestLevel=forestDemo;startForestLevel();}if(params.get('forestChoice')==='1'){forestDistance=.99;time=.15;}if(params.get('forestBat')==='1'){forestBats.push({x:.78,y:.56,speed:.035,phase:0,size:1.08});forestBatClock=99;}if(params.get('forestBranch')==='1'){const platform={x:.67,y:.57,width:.24,short:false,speed:params.get('forestFall')==='1'?.42:0,phase:0};forestPlatforms.push(platform);forestCollectibles.push({x:.62,y:.465,kind:2,speed:platform.speed,phase:0,platform},{x:.72,y:.465,kind:3,speed:platform.speed,phase:2,platform});forestPlatformClock=99;if(params.get('forestLand')==='1'){dogX=platform.x;forestDogY=forestPlatformTop(platform);forestOnPlatform=true;jumpVelocity=0;}}if(params.get('forestSlow')==='1'){forestPower='slowmo';forestPowerTimer=15;}if(params.get('forestShield')==='1'){forestPower='shield';forestPowerTimer=15;}},80);
 
-$('startBtn').onclick = () => { audio.start();lastGameWon=false;score = 0;lives = 3;energy=3;resetRunStats();if(selectedHero!=='dog'){heroFlightLevel=1;heroFlightTotalCoins=0;playMissionCinematic(5,beginHeroFlight);return;}mission=1;level = 1;levelScore = 0;blackAmmo=0;mission1HeartSpawned=false;mission1HeartClock=10+Math.random()*8;heartDrops=[];playMissionCinematic(1,()=>startLevel(true)); };
+$('startBtn').onclick = () => {const key=selectedHero!=='dog'?'missionSpecial':'mission1';if(missionControlBlocked(key))return;audio.start();lastGameWon=false;score = 0;lives = 3;energy=3;resetRunStats();if(selectedHero!=='dog'){heroFlightLevel=1;heroFlightTotalCoins=0;playMissionCinematic(5,beginHeroFlight);return;}mission=1;level = 1;levelScore = 0;blackAmmo=0;mission1HeartSpawned=false;mission1HeartClock=10+Math.random()*8;heartDrops=[];playMissionCinematic(1,()=>startLevel(true)); };
 $('soundBtn').onclick = () => {
   const muted = audio.toggle(); $('soundBtn').textContent = muted ? '🔇' : '🔊'; $('soundBtn').classList.toggle('muted',muted);
   $('soundBtn').setAttribute('aria-label',muted ? 'Activar música y efectos' : 'Silenciar música y efectos');
@@ -416,7 +419,7 @@ $('endingBtn').onclick = () => {
   if (endingStage === 'result') {
     if(mission===3){restartWholeGame();return;}
     if(mission===4){restartWholeGame();return;}
-    if(mission===1&&lastGameWon){playMissionCinematic(2,()=>beginMission2(false));return;}
+    if(mission===1&&lastGameWon){if(missionControlBlocked('mission2'))return;playMissionCinematic(2,()=>beginMission2(false));return;}
     if(!lastGameWon){replayCurrentMission();return;}
     if(mission===2){playMissionCinematic(3,showHeroUnlock);return;}
     endingStage = 'farewell'; $('ending').classList.add('farewell');
@@ -426,7 +429,7 @@ $('endingBtn').onclick = () => {
     $('endingMoral').classList.remove('hidden');
     $('endingBtn').innerHTML = 'Jugar otra vez <span>▶</span>';
   } else if(endingStage==='unlock'){
-    $('ending').classList.add('hidden');$('ending').classList.remove('win','farewell','unlock');playForestStory();
+    if(missionControlBlocked('mission3'))return;$('ending').classList.add('hidden');$('ending').classList.remove('win','farewell','unlock');playForestStory();
   } else {
     restartWholeGame();
   }
@@ -434,6 +437,7 @@ $('endingBtn').onclick = () => {
 $('replayBtn').onclick=replayCurrentMission;
 $('menuBtn').onclick=()=>{cancelAnimationFrame(raf);audio.engine(false);audio.wind(false);state='setup';$('ending').classList.add('hidden');$('ending').classList.remove('win','lose','farewell','unlock');$('game').classList.add('hidden');$('game').classList.remove('mission-two','hero-flight','forest-mission');$('setup').classList.remove('hidden');updateMenuProgress();refreshForestShortcut();};
 function replayCurrentMission(){
+  const replayKey=mission===2?'mission2':mission===3?'missionSpecial':mission===4?'mission3':'mission1';if(missionControlBlocked(replayKey))return;
   $('ending').classList.add('hidden');$('ending').classList.remove('win','lose','farewell','unlock');lastGameWon=false;score=0;lives=3;energy=3;resetRunStats();
   if(mission===2){spaceLevel=1;mission2HeartSpawned=false;mission2HeartClock=10+Math.random()*8;startMission2Level();}
   else if(mission===3){heroFlightLevel=1;heroFlightTotalCoins=0;heroHeartLevels=new Set();startHeroFlightLevel(true);}
@@ -446,14 +450,15 @@ function saveMission2Progress(){if(mission!==2)return;localStorage.setItem(MISSI
 function clearMission2Save(){localStorage.removeItem(MISSION2_SAVE_KEY);refreshMission2Shortcut();}
 function refreshMission2Shortcut(){const saved=getMission2Save(),unlocked=localStorage.getItem(MISSION2_UNLOCK_KEY)==='true',button=$('mission2Shortcut');button.classList.toggle('hidden',!saved||!unlocked);if(saved&&unlocked)button.textContent=`🚀 Continuar Misión 2 · Nivel ${saved.spaceLevel}`;}
 function beginMission2(resume=false){
+  if(missionControlBlocked('mission2')){restartWholeGame();return;}
   audio.start();audio.engine(false);state='setup';$('mission2Intro').classList.add('hidden');mission=2;lastGameWon=false;mission2ResumeRequested=resume;const saved=resume?getMission2Save():null;
   if(saved){spaceLevel=Math.max(1,Math.min(5,saved.spaceLevel||1));score=saved.score||0;lives=Math.max(1,saved.lives||3);energy=Math.max(1,Math.min(3,saved.energy||3));selectedDog=Math.max(0,Math.min(3,saved.selectedDog||0));selectedHero=heroesUnlocked()&&['cat','mouse'].includes(saved.selectedHero)?saved.selectedHero:'dog';$('dogName').value=saved.dogName||'';renderCharacterChoices();}
   else{spaceLevel=1;lives=3;energy=3;score=resume?0:score;catAssistTimer=0;mission2HeartSpawned=false;mission2HeartClock=10+Math.random()*8;heartDrops=[];}
   if(!saved)resetRunStats();$('mission2Briefing').classList.add('hidden');startMission2Level();
 }
 $('briefingStartBtn').onclick=()=>{$('mission2Briefing').classList.add('hidden');startMission2Level();};
-$('mission2Btn').onclick=()=>playMissionCinematic(2,()=>beginMission2(false));
-$('mission2Shortcut').onclick=()=>{if(getMission2Save())beginMission2(true);};
+$('mission2Btn').onclick=()=>{if(!missionControlBlocked('mission2'))playMissionCinematic(2,()=>beginMission2(false));};
+$('mission2Shortcut').onclick=()=>{if(!missionControlBlocked('mission2')&&getMission2Save())beginMission2(true);};
 
 function restartWholeGame(){
   cancelAnimationFrame(raf);lifeCountdownToken++;audio.engine(false);audio.wind(false);mission=1;lastGameWon=false;state='setup';score=0;levelScore=0;level=1;lives=3;energy=3;blackAmmo=0;heartDrops=[];mission1HeartSpawned=false;mission2HeartSpawned=false;mission1HeartClock=10+Math.random()*8;mission2HeartClock=10+Math.random()*8;
@@ -916,7 +921,7 @@ function startVictorySequence() {
   showToast('¡TODOS ESTÁN A SALVO!'); audio.fx('level');
 }
 
-function beginHeroFlight(){mission=3;heroFlightLevel=1;heroFlightTotalCoins=0;heroHeartLevels=new Set();score=0;lives=3;energy=3;resetRunStats();startHeroFlightLevel(true);}
+function beginHeroFlight(){if(missionControlBlocked('missionSpecial')){restartWholeGame();return;}mission=3;heroFlightLevel=1;heroFlightTotalCoins=0;heroHeartLevels=new Set();score=0;lives=3;energy=3;resetRunStats();startHeroFlightLevel(true);}
 function startHeroFlightLevel(resetCoins=true){
   const cfg=heroFlightConfig[heroFlightLevel-1];mission=3;state='playing';if(resetCoins){heroFlightCoins=0;lives=3;heroHeartClock=8+Math.random()*Math.max(6,cfg.duration-22);}heroHeartSpawned=heroHeartLevels.has(heroFlightLevel);time=cfg.duration;heroFlightX=.18;heroFlightY=.5;heroFlightVY=0;heroFlightObjects=[];heroShots=[];heroFlightCoinClock=.7;heroFlightHazardClock=cfg.hazard;heroFlightCloverClock=10+Math.random()*7;heroFuelClock=7+Math.random()*3;heroBoxClock=8+Math.random()*4;heroFuel=100;heroShotCooldown=0;heroBananaTimer=0;heroFlightImmunity=0;heroFlightInvuln=3;heroFlightDistance=0;heroFlightLightning=0;heroFlightScroll=0;dragonHP=10000;dragonX=.82;dragonY=.34;dragonFireClock=2.3;dragonHitTimer=0;impactParticles=[];floatingTexts=[];flash=0;
   document.querySelector('.score-pill small').textContent='MONEDAS';$('setup').classList.add('hidden');$('game').classList.remove('hidden','mission-two','forest-mission','damage-shake');$('game').classList.add('hero-flight','flying-hero');$('bossBar').classList.add('hidden');$('alienBar').classList.toggle('hidden',heroFlightLevel!==5);if(heroFlightLevel===5){$('alienBar').querySelector('span').innerHTML='🐉 DRAGÓN DE FUEGO <b id="alienCount">10.000</b>';audio.fx('dragon');}$('pauseBtn').classList.remove('hidden');$('actionBtn').classList.remove('hidden');$('actionBtn').textContent=heroFlightLevel===5?'¡TIRÁ!':'¡VOLÁ!';$('actionBtn').setAttribute('aria-label',heroFlightLevel===5?'Disparar al dragón':'Subir');$('specialFireBtn').classList.toggle('hidden',heroFlightLevel!==5);$('specialFireBtn').textContent='↑';$('specialFireBtn').setAttribute('aria-label','Subir');$('missionObjective').classList.remove('hidden');$('missionObjective').textContent=heroFlightLevel===5?`OBJETIVO · CAUSÁ 10.000 PUNTOS AL DRAGÓN`:`OBJETIVO · JUNTÁ ${cfg.target} MONEDAS`;$('climateLabel').textContent=cfg.climate;$('tutorialCoach').classList.add('hidden');
@@ -969,6 +974,7 @@ function endHeroFlight(won,reason=''){
 
 const spaceNames=spaceLevelConfig.map(level=>level.name);
 function beginForestAdventure(){
+  if(missionControlBlocked('mission3')){restartWholeGame();return;}
   mission=4;selectedHero='dog';selectedDog=0;forestLevel=1;forestClues=0;forestCorrectRoute=Math.floor(Math.random()*3);score=0;lives=3;energy=3;resetRunStats();startForestLevel();
 }
 function startForestLevel(){
